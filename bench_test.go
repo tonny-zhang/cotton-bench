@@ -13,6 +13,7 @@ import (
 	"testing"
 
 	beegomux "github.com/beego/mux"
+	"github.com/go-chi/chi"
 
 	"github.com/go-zoo/bone"
 	"github.com/julienschmidt/httprouter"
@@ -31,6 +32,8 @@ var githubAPI = []route{
 	// OAuth Authorizations
 	{"GET", "/authorizations"},
 	{"GET", "/authorizations/:id"},
+	{"GET", "/authorizations/:id/test"},
+	{"GET", "/authorizations/:id/tt"},
 	{"POST", "/authorizations"},
 	//{"PUT", "/authorizations/clients/:client_id"},
 	//{"PATCH", "/authorizations/:id"},
@@ -290,269 +293,6 @@ var githubAPI = []route{
 	{"DELETE", "/user/keys/:id"},
 }
 
-var githubAPI2 = []route{
-	// OAuth Authorizations
-	{"GET", "/authorizations"},
-	{"GET", "/authorizations/{id:[0-9]+}"},
-	{"POST", "/authorizations"},
-	//{"PUT", "/authorizations/clients/{client_id:[0-9]+}"},
-	//{"PATCH", "/authorizations/{id:[0-9]+}"},
-	{"DELETE", "/authorizations/{id:[0-9]+}"},
-	{"GET", "/applications/{client_id:[0-9]+}/tokens/{access_token:\\w+}"},
-	{"DELETE", "/applications/{client_id:[0-9]+}/tokens"},
-	{"DELETE", "/applications/{client_id:[0-9]+}/tokens/{access_token:\\w+}"},
-
-	// Activity
-	{"GET", "/events"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/events"},
-	{"GET", "/networks/{owner:\\w+}/{repo:\\w+}/events"},
-	{"GET", "/orgs/{org:\\w+}/events"},
-	{"GET", "/users/{user:\\w+}/received_events"},
-	{"GET", "/users/{user:\\w+}/received_events/public"},
-	{"GET", "/users/{user:\\w+}/events"},
-	{"GET", "/users/{user:\\w+}/events/public"},
-	{"GET", "/users/{user:\\w+}/events/orgs/{org:\\w+}"},
-	{"GET", "/feeds"},
-	{"GET", "/notifications"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/notifications"},
-	{"PUT", "/notifications"},
-	{"PUT", "/repos/{owner:\\w+}/{repo:\\w+}/notifications"},
-	{"GET", "/notifications/threads/{id:[0-9]+}"},
-	//{"PATCH", "/notifications/threads/{id:[0-9]+}"},
-	{"GET", "/notifications/threads/{id:[0-9]+}/subscription"},
-	{"PUT", "/notifications/threads/{id:[0-9]+}/subscription"},
-	{"DELETE", "/notifications/threads/{id:[0-9]+}/subscription"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/stargazers"},
-	{"GET", "/users/{user:\\w+}/starred"},
-	{"GET", "/user/starred"},
-	{"GET", "/user/starred/{owner:\\w+}/{repo:\\w+}"},
-	{"PUT", "/user/starred/{owner:\\w+}/{repo:\\w+}"},
-	{"DELETE", "/user/starred/{owner:\\w+}/{repo:\\w+}"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/subscribers"},
-	{"GET", "/users/{user:\\w+}/subscriptions"},
-	{"GET", "/user/subscriptions"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/subscription"},
-	{"PUT", "/repos/{owner:\\w+}/{repo:\\w+}/subscription"},
-	{"DELETE", "/repos/{owner:\\w+}/{repo:\\w+}/subscription"},
-	{"GET", "/user/subscriptions/{owner:\\w+}/{repo:\\w+}"},
-	{"PUT", "/user/subscriptions/{owner:\\w+}/{repo:\\w+}"},
-	{"DELETE", "/user/subscriptions/{owner:\\w+}/{repo:\\w+}"},
-
-	// Gists
-	{"GET", "/users/{user:\\w+}/gists"},
-	{"GET", "/gists"},
-	//{"GET", "/gists/public"},
-	//{"GET", "/gists/starred"},
-	{"GET", "/gists/{id:[0-9]+}"},
-	{"POST", "/gists"},
-	//{"PATCH", "/gists/{id:[0-9]+}"},
-	{"PUT", "/gists/{id:[0-9]+}/star"},
-	{"DELETE", "/gists/{id:[0-9]+}/star"},
-	{"GET", "/gists/{id:[0-9]+}/star"},
-	{"POST", "/gists/{id:[0-9]+}/forks"},
-	{"DELETE", "/gists/{id:[0-9]+}"},
-
-	// Git Data
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/git/blobs/{sha:\\w+}"},
-	{"POST", "/repos/{owner:\\w+}/{repo:\\w+}/git/blobs"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/git/commits/{sha:\\w+}"},
-	{"POST", "/repos/{owner:\\w+}/{repo:\\w+}/git/commits"},
-	//{"GET", "/repos/{owner}/{repo}/git/refs/*ref"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/git/refs"},
-	{"POST", "/repos/{owner:\\w+}/{repo:\\w+}/git/refs"},
-	//{"PATCH", "/repos/{owner}/{repo}/git/refs/*ref"},
-	//{"DELETE", "/repos/{owner}/{repo}/git/refs/*ref"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/git/tags/{sha:\\w+}"},
-	{"POST", "/repos/{owner:\\w+}/{repo:\\w+}/git/tags"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/git/trees/{sha:\\w+}"},
-	{"POST", "/repos/{owner:\\w+}/{repo:\\w+}/git/trees"},
-
-	// Issues
-	{"GET", "/issues"},
-	{"GET", "/user/issues"},
-	{"GET", "/orgs/{org:\\w+}/issues"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/issues"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/issues/{number:\\w+}"},
-	{"POST", "/repos/{owner:\\w+}/{repo:\\w+}/issues"},
-	//{"PATCH", "/repos/{owner}/{repo}/issues/{number}"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/assignees"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/assignees/{assignee:\\w+}"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/issues/{number:\\w+}/comments"},
-	//{"GET", "/repos/{owner}/{repo}/issues/comments"},
-	//{"GET", "/repos/{owner}/{repo}/issues/comments/{id:[0-9]+}"},
-	{"POST", "/repos/{owner:\\w+}/{repo:\\w+}/issues/{number:\\w+}/comments"},
-	//{"PATCH", "/repos/{owner}/{repo}/issues/comments/{id:[0-9]+}"},
-	//{"DELETE", "/repos/{owner}/{repo}/issues/comments/{id:[0-9]+}"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/issues/{number:\\w+}/events"},
-	//{"GET", "/repos/{owner}/{repo}/issues/events"},
-	//{"GET", "/repos/{owner}/{repo}/issues/events/{id:[0-9]+}"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/labels"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/labels/{name:\\w+}"},
-	{"POST", "/repos/{owner:\\w+}/{repo:\\w+}/labels"},
-	//{"PATCH", "/repos/{owner}/{repo}/labels/{name}"},
-	{"DELETE", "/repos/{owner:\\w+}/{repo:\\w+}/labels/{name:\\w+}"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/issues/{name:\\w+}/labels"},
-	{"POST", "/repos/{owner:\\w+}/{repo:\\w+}/issues/{name:\\w+}/labels"},
-	{"DELETE", "/repos/{owner:\\w+}/{repo:\\w+}/issues/{name:\\w+}/labels/{name:\\w+}"},
-	{"PUT", "/repos/{owner:\\w+}/{repo:\\w+}/issues/{name:\\w+}/labels"},
-	{"DELETE", "/repos/{owner:\\w+}/{repo:\\w+}/issues/{name:\\w+}/labels"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/milestones/{name:\\w+}/labels"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/milestones"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/milestones/{name:\\w+}"},
-	{"POST", "/repos/{owner:\\w+}/{repo:\\w+}/milestones"},
-	//{"PATCH", "/repos/{owner}/{repo}/milestones/{number}"},
-	{"DELETE", "/repos/{owner:\\w+}/{repo:\\w+}/milestones/{number:\\w+}"},
-
-	// Miscellaneous
-	{"GET", "/emojis"},
-	{"GET", "/gitignore/templates"},
-	{"GET", "/gitignore/templates/{name:\\w+}"},
-	{"POST", "/markdown"},
-	{"POST", "/markdown/raw"},
-	{"GET", "/meta"},
-	{"GET", "/rate_limit"},
-
-	// Organizations
-	{"GET", "/users/{user:\\w+}/orgs"},
-	{"GET", "/user/orgs"},
-	{"GET", "/orgs/{org:\\w+}"},
-	//{"PATCH", "/orgs/{org}"},
-	{"GET", "/orgs/{org:\\w+}/members"},
-	{"GET", "/orgs/{org:\\w+}/members/{user:\\w+}"},
-	{"DELETE", "/orgs/{org:\\w+}/members/{user:\\w+}"},
-	{"GET", "/orgs/{org:\\w+}/public_members"},
-	{"GET", "/orgs/{org:\\w+}/public_members/{user:\\w+}"},
-	{"PUT", "/orgs/{org:\\w+}/public_members/{user:\\w+}"},
-	{"DELETE", "/orgs/{org:\\w+}/public_members/{user:\\w+}"},
-	{"GET", "/orgs/{org:\\w+}/teams"},
-	{"GET", "/teams/{id:[0-9]+}"},
-	{"POST", "/orgs/{org:\\w+}/teams"},
-	//{"PATCH", "/teams/{id:[0-9]+}"},
-	{"DELETE", "/teams/{id:[0-9]+}"},
-	{"GET", "/teams/{id:[0-9]+}/members"},
-	{"GET", "/teams/{id:[0-9]+}/members/{user:\\w+}"},
-	{"PUT", "/teams/{id:[0-9]+}/members/{user:\\w+}"},
-	{"DELETE", "/teams/{id:[0-9]+}/members/{user:\\w+}"},
-	{"GET", "/teams/{id:[0-9]+}/repos"},
-	{"GET", "/teams/{id:[0-9]+}/repos/{owner:\\w+}/{repo:\\w+}"},
-	{"PUT", "/teams/{id:[0-9]+}/repos/{owner:\\w+}/{repo:\\w+}"},
-	{"DELETE", "/teams/{id:[0-9]+}/repos/{owner:\\w+}/{repo:\\w+}"},
-	{"GET", "/user/teams"},
-
-	// Pull Requests
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/pulls"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/pulls/{number:\\w+}"},
-	{"POST", "/repos/{owner:\\w+}/{repo:\\w+}/pulls"},
-	//{"PATCH", "/repos/{owner}/{repo}/pulls/{number}"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/pulls/{number:\\w+}/commits"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/pulls/{number:\\w+}/files"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/pulls/{number:\\w+}/merge"},
-	{"PUT", "/repos/{owner:\\w+}/{repo:\\w+}/pulls/{number:\\w+}/merge"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/pulls/{number:\\w+}/comments"},
-	//{"GET", "/repos/{owner}/{repo}/pulls/comments"},
-	//{"GET", "/repos/{owner}/{repo}/pulls/comments/{number}"},
-	{"PUT", "/repos/{owner:\\w+}/{repo:\\w+}/pulls/{number:\\w+}/comments"},
-	//{"PATCH", "/repos/{owner}/{repo}/pulls/comments/{number}"},
-	//{"DELETE", "/repos/{owner}/{repo}/pulls/comments/{number}"},
-
-	// Repositories
-	{"GET", "/user/repos"},
-	{"GET", "/users/{user:\\w+}/repos"},
-	{"GET", "/orgs/{org:\\w+}/repos"},
-	{"GET", "/repositories"},
-	{"POST", "/user/repos"},
-	{"POST", "/orgs/{org:\\w+}/repos"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}"},
-	//{"PATCH", "/repos/{owner}/{repo}"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/contributors"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/languages"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/teams"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/tags"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/branches"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/branches/{branch:\\w+}"},
-	{"DELETE", "/repos/{owner:\\w+}/{repo:\\w+}"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/collaborators"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/collaborators/{user:\\w+}"},
-	{"PUT", "/repos/{owner:\\w+}/{repo:\\w+}/collaborators/{user:\\w+}"},
-	{"DELETE", "/repos/{owner:\\w+}/{repo:\\w+}/collaborators/{user:\\w+}"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/comments"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/commits/{sha:\\w+}/comments"},
-	{"POST", "/repos/{owner:\\w+}/{repo:\\w+}/commits/{sha:\\w+}/comments"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/comments/{id:[0-9]+}"},
-	//{"PATCH", "/repos/{owner}/{repo}/comments/{id:[0-9]+}"},
-	{"DELETE", "/repos/{owner:\\w+}/{repo:\\w+}/comments/{id:[0-9]+}"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/commits"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/commits/{sha:\\w+}"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/readme"},
-	//{"GET", "/repos/{owner}/{repo}/contents/*path"},
-	//{"PUT", "/repos/{owner}/{repo}/contents/*path"},
-	//{"DELETE", "/repos/{owner}/{repo}/contents/*path"},
-	//{"GET", "/repos/{owner}/{repo}/:archive_format/:ref"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/keys"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/keys/{id:[0-9]+}"},
-	{"POST", "/repos/{owner:\\w+}/{repo:\\w+}/keys"},
-	//{"PATCH", "/repos/{owner}/{repo}/keys/{id:[0-9]+}"},
-	{"DELETE", "/repos/{owner:\\w+}/{repo:\\w+}/keys/{id:[0-9]+}"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/downloads"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/downloads/{id:[0-9]+}"},
-	{"DELETE", "/repos/{owner:\\w+}/{repo:\\w+}/downloads/{id:[0-9]+}"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/forks"},
-	{"POST", "/repos/{owner:\\w+}/{repo:\\w+}/forks"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/hooks"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/hooks/{id:[0-9]+}"},
-	{"POST", "/repos/{owner:\\w+}/{repo:\\w+}/hooks"},
-	//{"PATCH", "/repos/{owner}/{repo}/hooks/{id:[0-9]+}"},
-	{"POST", "/repos/{owner:\\w+}/{repo:\\w+}/hooks/{id:[0-9]+}/tests"},
-	{"DELETE", "/repos/{owner:\\w+}/{repo:\\w+}/hooks/{id:[0-9]+}"},
-	{"POST", "/repos/{owner:\\w+}/{repo:\\w+}/merges"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/releases"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/releases/{id:[0-9]+}"},
-	{"POST", "/repos/{owner:\\w+}/{repo:\\w+}/releases"},
-	//{"PATCH", "/repos/{owner:\\w+}/{repo}/releases/{id:[0-9]+}"},
-	{"DELETE", "/repos/{owner:\\w+}/{repo:\\w+}/releases/{id:[0-9]+}"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/releases/{id:[0-9]+}/assets"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/stats/contributors"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/stats/commit_activity"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/stats/code_frequency"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/stats/participation"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/stats/punch_card"},
-	{"GET", "/repos/{owner:\\w+}/{repo:\\w+}/statuses/{ref:\\w+}"},
-	{"POST", "/repos/{owner:\\w+}/{repo:\\w+}/statuses/{ref:\\w+}"},
-
-	// Search
-	{"GET", "/search/repositories"},
-	{"GET", "/search/code"},
-	{"GET", "/search/issues"},
-	{"GET", "/search/users"},
-	{"GET", "/legacy/issues/search/{owner:\\w+}/{repo:\\w+}sitory/{state:\\w+}/{keyword:\\w+}"},
-	{"GET", "/legacy/repos/search/{keyword:\\w+}"},
-	{"GET", "/legacy/user/search/{keyword:\\w+}"},
-	{"GET", "/legacy/user/email/{email:\\w+}"},
-
-	// Users
-	{"GET", "/users/{user:\\w+}"},
-	{"GET", "/user"},
-	//{"PATCH", "/user"},
-	{"GET", "/users"},
-	{"GET", "/user/emails"},
-	{"POST", "/user/emails"},
-	{"DELETE", "/user/emails"},
-	{"GET", "/users/{user:\\w+}/followers"},
-	{"GET", "/user/followers"},
-	{"GET", "/users/{user:\\w+}/following"},
-	{"GET", "/user/following"},
-	{"GET", "/user/following/{user:\\w+}"},
-	{"GET", "/users/{user:\\w+}/following/{target_user:\\w+}"},
-	{"PUT", "/user/following/{user:\\w+}"},
-	{"DELETE", "/user/following/{user:\\w+}"},
-	{"GET", "/users/{user:\\w+}/keys"},
-	{"GET", "/user/keys"},
-	{"GET", "/user/keys/{id:[0-9]+}"},
-	{"POST", "/user/keys"},
-	//{"PATCH", "/user/keys/{id:[0-9]+}"},
-	{"DELETE", "/user/keys/{id:[0-9]+}"},
-}
-
 func calcMem(name string, load func()) {
 	m := new(runtime.MemStats)
 
@@ -567,8 +307,7 @@ func calcMem(name string, load func()) {
 	runtime.GC()
 	runtime.ReadMemStats(m)
 	after := m.HeapAlloc
-	// println("   "+name+":\t\t", after-before, "Bytes")
-	fmt.Printf("\t%15s:%10d bytes\n", name, after-before)
+	fmt.Printf("%15s:%10d bytes\n", name, after-before)
 }
 
 var (
@@ -577,7 +316,6 @@ var (
 	chiRouter      http.Handler
 	httpRouter     http.Handler
 	goRouter1      http.Handler
-	goRouter2      http.Handler
 	muxRouter      http.Handler
 	trieMuxRouter  http.Handler
 	cottonRouter   http.Handler
@@ -585,7 +323,6 @@ var (
 
 func init() {
 	println("GithubAPI Routes:", len(githubAPI))
-	println("GithubAPI2 Routes:", len(githubAPI2))
 
 	calcMem("cottonRouter", func() {
 		router := cotton.NewRouter()
@@ -609,8 +346,6 @@ func init() {
 			}
 		}
 		cottonRouter = &router
-
-		// router.PrintTree()
 	})
 
 	calcMem("BeegoMuxRouter", func() {
@@ -646,16 +381,16 @@ func init() {
 		boneRouter = router
 	})
 
-	// calcMem("ChiRouter", func() {
-	// 	router := chi.NewRouter()
-	// 	handler := func(w http.ResponseWriter, _ *http.Request) {
-	// 		w.WriteHeader(204)
-	// 	}
-	// 	for _, route := range githubAPI {
-	// 		router.MethodFunc(route.method, route.path, handler)
-	// 	}
-	// 	chiRouter = router
-	// })
+	calcMem("ChiRouter", func() {
+		router := chi.NewRouter()
+		handler := func(w http.ResponseWriter, _ *http.Request) {
+			w.WriteHeader(204)
+		}
+		for _, route := range githubAPI {
+			router.MethodFunc(route.method, route.path, handler)
+		}
+		chiRouter = router
+	})
 
 	calcMem("HttpRouter", func() {
 		router := httprouter.New()
@@ -666,6 +401,8 @@ func init() {
 			router.Handle(route.method, route.path, handler)
 		}
 		httpRouter = router
+
+		// router.PrintTree(http.MethodGet)
 	})
 
 	calcMem("trie-mux", func() {
@@ -679,17 +416,6 @@ func init() {
 		trieMuxRouter = router
 	})
 
-	// calcMem("MuxRouter", func() {
-	// 	router := mux.NewRouter()
-	// 	handler := func(w http.ResponseWriter, _ *http.Request) {
-	// 		w.WriteHeader(204)
-	// 	}
-	// 	for _, route := range githubAPI2 {
-	// 		router.HandleFunc(route.path, handler).Methods(route.method)
-	// 	}
-	// 	muxRouter = router
-	// })
-
 	calcMem("GoRouter1", func() {
 		router := gorouter.New()
 		handler := func(w http.ResponseWriter, _ *http.Request) {
@@ -701,17 +427,9 @@ func init() {
 		goRouter1 = router
 	})
 
-	calcMem("GoRouter2", func() {
-		router := gorouter.New()
-		handler := func(w http.ResponseWriter, _ *http.Request) {
-			w.WriteHeader(204)
-		}
-		for _, route := range githubAPI2 {
-			router.Handle(route.method, route.path, handler)
-		}
-		goRouter2 = router
-	})
-
+	for i := 0; i < len(githubAPI); i++ {
+		githubAPI[i].path = strings.ReplaceAll(githubAPI[i].path, ":", "val")
+	}
 }
 
 // reference：https://github.com/julienschmidt/go-http-routing-benchmark/blob/2b136956a56bc65dddfa4bdaf7d1728ae2c90d50/bench_test.go#L76
@@ -723,20 +441,12 @@ func benchRoutes(b *testing.B, router http.Handler, routes []route) {
 
 	b.ReportAllocs()
 	b.ResetTimer()
-	// var reg = regexp.MustCompile(":[^/]+")
-	// for _, route := range githubAPI {
-	// 	// route.path = reg.ReplaceAllStringFunc(route.path, func(str string) string {
-	// 	// 	return "val" + str[1:]
-	// 	// })
 
-	// 	route.path = strings.ReplaceAll(route.path, ":", "val")
-	// }
 	for i := 0; i < b.N; i++ {
 		for _, route := range routes {
-			p := strings.ReplaceAll(route.path, ":", "val")
 			r.Method = route.method
-			r.RequestURI = p
-			u.Path = p
+			r.RequestURI = route.path
+			u.Path = route.path
 			u.RawQuery = rq
 			router.ServeHTTP(w, r)
 		}
@@ -745,9 +455,13 @@ func benchRoutes(b *testing.B, router http.Handler, routes []route) {
 
 // With GithubAPI (goRouter vs beegoMuxRouter vs BoneRouter vs httpRouter vs trieMuxRouter)
 
+func BenchmarkHttpRouterWithGithubAPI(b *testing.B) {
+	benchRoutes(b, httpRouter, githubAPI)
+}
 func BenchmarkCottonRouterWithGithubAPI(b *testing.B) {
 	benchRoutes(b, cottonRouter, githubAPI)
 }
+
 func BenchmarkBeegoMuxRouterWithGithubAPI(b *testing.B) {
 	benchRoutes(b, beegoMuxRouter, githubAPI)
 }
@@ -760,24 +474,6 @@ func BenchmarkTrieMuxRouterWithGithubAPI(b *testing.B) {
 	benchRoutes(b, trieMuxRouter, githubAPI)
 }
 
-func BenchmarkHttpRouterWithGithubAPI(b *testing.B) {
-	benchRoutes(b, httpRouter, githubAPI)
-}
-
 func BenchmarkGoRouter1WithGithubAPI(b *testing.B) {
 	benchRoutes(b, goRouter1, githubAPI)
 }
-
-// With GithubAPI2 (goRouter vs muxRouter vs chiRouter)
-
-// func BenchmarkGoRouter2WithGithubAPI2(b *testing.B) {
-// 	benchRoutes(b, goRouter2, githubAPI2)
-// }
-
-// func BenchmarkChiRouterWithGithubAPI2(b *testing.B) {
-// 	benchRoutes(b, chiRouter, githubAPI2)
-// }
-
-// func BenchmarkMuxRouterWithGithubAPI2(b *testing.B) {
-// 	benchRoutes(b, muxRouter, githubAPI2)
-// }
