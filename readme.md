@@ -1,3 +1,27 @@
+## 2021-3-25
+```
+GithubAPI Routes: 205
+   cottonRouter:     95352 bytes
+ BeegoMuxRouter:    108848 bytes
+     BoneRouter:    102888 bytes
+      ChiRouter:     71240 bytes
+     HttpRouter:     36016 bytes
+       trie-mux:    132456 bytes
+      GoRouter1:     83320 bytes
+goos: darwin
+goarch: amd64
+pkg: cottonbench
+cpu: Intel(R) Core(TM) i5-8279U CPU @ 2.40GHz
+BenchmarkHttpRouterWithGithubAPI-8                 39334             31510 ns/op           13856 B/op        169 allocs/op
+BenchmarkCottonRouterWithGithubAPI-8               34222             35289 ns/op               0 B/op          0 allocs/op
+BenchmarkBeegoMuxRouterWithGithubAPI-8             10018            120020 ns/op          139056 B/op       1050 allocs/op
+BenchmarkBoneRouterWithGithubAPI-8                   636           1861204 ns/op          744017 B/op       8893 allocs/op
+BenchmarkTrieMuxRouterWithGithubAPI-8              17384             69513 ns/op           66624 B/op        543 allocs/op
+BenchmarkGoRouter1WithGithubAPI-8                     61          18119023 ns/op        14473757 B/op     133388 allocs/op
+PASS
+ok      cottonbench     11.384s
+```
+
 ## 2021-3-21
 ```
 GithubAPI Routes: 205
