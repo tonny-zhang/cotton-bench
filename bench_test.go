@@ -345,7 +345,7 @@ func init() {
 				router.Delete(route.path, handler)
 			}
 		}
-		cottonRouter = &router
+		cottonRouter = router
 	})
 
 	calcMem("BeegoMuxRouter", func() {
